@@ -16,6 +16,29 @@ const updatePrimaryButtonLabels = () => {
 
 updatePrimaryButtonLabels();
 
+const form = document.querySelector('#trial-form');
+if (form) {
+  form.removeAttribute('novalidate');
+  form.setAttribute('action', 'https://formspree.io/f/xdeowwja');
+  form.setAttribute('method', 'POST');
+  form.querySelectorAll('[name]').forEach((field) => {
+    field.setAttribute('data-fs-field', '');
+    const error = field.closest('label')?.querySelector('.error');
+    if (error) error.setAttribute('data-fs-error', field.getAttribute('name'));
+  });
+
+  const submitButton = form.querySelector('button[type="submit"]');
+  if (submitButton) submitButton.setAttribute('data-fs-submit-btn', '');
+
+  const successMessage = form.querySelector('.form-success');
+  if (successMessage) successMessage.setAttribute('data-fs-success', '');
+
+  const formError = document.createElement('div');
+  formError.setAttribute('data-fs-error', '');
+  formError.setAttribute('role', 'alert');
+  form.insertBefore(formError, successMessage);
+}
+
 if (menuToggle && nav) {
   menuToggle.addEventListener('click', () => {
     const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
@@ -44,36 +67,6 @@ document.querySelectorAll('details').forEach((detail) => {
     }
   });
 });
-
-const form = document.querySelector('#trial-form');
-if (form) {
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const requiredFields = [...form.querySelectorAll('[required]')];
-    let isValid = true;
-
-    requiredFields.forEach((field) => {
-      const valid = field.checkValidity();
-      field.closest('label').classList.toggle('has-error', !valid);
-      if (!valid) isValid = false;
-    });
-
-    if (!isValid) {
-      const firstError = form.querySelector('.has-error input, .has-error select');
-      if (firstError) firstError.focus();
-      return;
-    }
-
-    const successMessage = form.querySelector('.form-success');
-    if (successMessage) {
-      successMessage.classList.add('is-visible');
-      successMessage.focus();
-    }
-
-    const submitButton = form.querySelector('button[type="submit"]');
-    if (submitButton) submitButton.disabled = true;
-  });
-}
 
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
